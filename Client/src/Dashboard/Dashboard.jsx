@@ -5,14 +5,14 @@ const Dashboard = () => {
 
     const fetchUsers = async () => {
       try {
-        const response = await fetch("http://localhost:5000/users");
+        const response = await fetch("https://social-server-3-go6a.onrender.com/users");
         const data = await response.json();
         setUsers(data);
       } catch (error) {
         console.error("Error fetching users:", error);
       }
     };
-  
+  console.log(users);
     useEffect(() => {
       fetchUsers();
     }, []);
@@ -35,8 +35,8 @@ const Dashboard = () => {
             </tr>
           </thead>
           <tbody>
-            {users.length > 0 ? (
-              users.map((user) => (
+            {users?.length > 0 ? (
+              users?.map((user) => (
                 <tr
                   key={user._id}
                   className="border-b last:border-none hover:bg-gray-50"

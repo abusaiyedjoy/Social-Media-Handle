@@ -26,7 +26,7 @@ const App = () => {
     Array.from(formData.images).forEach((file) => data.append("images", file));
 
     try {
-      const response = await fetch("http://localhost:5000/users", {
+      const response = await fetch("https://social-server-3-go6a.onrender.com/users", {
         method: "POST",
         body: data,
       });
