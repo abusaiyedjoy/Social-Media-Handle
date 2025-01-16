@@ -1,7 +1,7 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 
-const FormComponent = () => {
+const App = () => {
   const [formData, setFormData] = useState({
     name: "",
     socialHandle: "",
@@ -14,45 +14,64 @@ const FormComponent = () => {
   };
 
   const handleFileChange = (e) => {
-    setFormData({ ...formData, images: Array.from(e.target.files) });
+    setFormData({ ...formData, images: e.target.files });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form Data Submitted:", formData);
+
+    const data = new FormData();
+    data.append("name", formData.name);
+    data.append("socialHandle", formData.socialHandle);
+    Array.from(formData.images).forEach((file) => data.append("images", file));
+
+    try {
+      const response = await fetch("http://localhost:5000/users", {
+        method: "POST",
+        body: data,
+      });
+      await response.json();
+      alert("Upload Data Successfully");
+      setFormData({ name: "", socialHandle: "", images: [] });
+    } catch (error) {
+      console.error("Error uploading data:", error);
+      alert("Failed to upload data.");
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+    <div className="w-full">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-md bg-white rounded-lg shadow-md p-6"
+        className="max-w-lg mx-auto bg-white shadow-md rounded-lg p-6 mt-10"
       >
-        <h2 className="text-2xl font-bold text-center mb-6 text-gray-700">
-          Upload Form
+        <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
+          Upload Your Details
         </h2>
+
         <div className="mb-4">
           <label
             htmlFor="name"
-            className="block text-sm font-medium text-gray-700 mb-2"
+            className="block text-sm font-medium text-gray-700 mb-1"
           >
             Name
           </label>
           <input
-            type="name"
+            type="text"
             id="name"
             name="name"
             value={formData.name}
             onChange={handleInputChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Enter your name"
+            className="w-full p-3 border rounded-lg shadow-sm focus:ring focus:ring-blue-300 focus:outline-none"
             required
           />
         </div>
+
         <div className="mb-4">
           <label
             htmlFor="socialHandle"
-            className="block text-sm font-medium text-gray-700 mb-2"
+            className="block text-sm font-medium text-gray-700 mb-1"
           >
             Social Media Handle
           </label>
@@ -62,17 +81,18 @@ const FormComponent = () => {
             name="socialHandle"
             value={formData.socialHandle}
             onChange={handleInputChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="@username"
+            className="w-full p-3 border rounded-lg shadow-sm focus:ring focus:ring-blue-300 focus:outline-none"
             required
           />
         </div>
+
         <div className="mb-4">
           <label
             htmlFor="images"
-            className="block text-sm font-medium text-gray-700 mb-2"
+            className="block text-sm font-medium text-gray-700 mb-1"
           >
-            Select Images
+            Upload Images
           </label>
           <input
             type="file"
@@ -81,19 +101,29 @@ const FormComponent = () => {
             multiple
             accept="image/*"
             onChange={handleFileChange}
-            className="w-full text-gray-700 border border-gray-300 rounded-lg p-2"
+            className="w-full p-3 border rounded-lg shadow-sm focus:ring focus:ring-blue-300 focus:outline-none"
+            required
           />
         </div>
+
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-200"
+          className="w-full bg-blue-500 text-white font-semibold py-3 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
         >
           Submit
         </button>
-        <p className="py-2 text-center"><Link to={"/adminLogin"} className="font-medium text-lg hover:text-blue-700">Dashboard-Login</Link></p>
+        <div className="flex justify-center items-center">
+
+        <Link
+          to="/dashboard"
+          className="mt-3 hover:text-blue-500 text-center hover:underline text-lg font-semibold"
+        >
+          Go to Dashboard
+        </Link>
+        </div>
       </form>
     </div>
   );
 };
 
-export default FormComponent;
+export default App;
